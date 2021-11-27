@@ -1,3 +1,4 @@
+using BlazorApplicationInsights;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +19,11 @@ namespace BlazorApp1.Client
             builder.RootComponents.Add<App>("#app");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
+            builder.Services.AddBlazorApplicationInsights(async applicationInsights =>
+            {
+                await applicationInsights.SetInstrumentationKey(builder.Configuration.GetSection("AppInsights").Value);
+                await applicationInsights.LoadAppInsights();
+            });
             await builder.Build().RunAsync();
         }
     }

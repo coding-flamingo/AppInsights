@@ -37,10 +37,23 @@ else
 
 @code {
     private WeatherForecast[] forecasts;
+    [Inject] private IApplicationInsights AppInsights { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        try
+        {
+            forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        }
+        catch (Exception ex)
+            {
+                Error error = new()
+                {
+                    Message = ex.Message,
+                    Stack = ex.StackTrace
+                };
+                await AppInsights.TrackException(error);
+            }
     }
 
 }
